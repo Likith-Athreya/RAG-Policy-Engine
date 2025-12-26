@@ -78,6 +78,7 @@ Five test questions were used, including:
 Result:
 
 - Prompt Version 2 produced clearer, safer, and more policy-faithful answers
+- Prompt V2 reduced hallucinations by explicitly restricting the model to retrieved context and defining a failure response. This resulted in more conservative but reliable answers, which is preferable for policy QA.
 
 ## Edge Case Handling
 
