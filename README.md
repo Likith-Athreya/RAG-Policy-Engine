@@ -1,147 +1,116 @@
-RAG Policy Engine
+# RAG Policy Engine
 
 A small Retrieval-Augmented Generation (RAG) system that answers questions strictly based on internal company policy documents such as Refund Policy, Shipping Policy, and Terms of Service.
 
 This project was built as part of an AI Engineer intern take-home assignment. The focus is on prompt design, retrieval correctness, and hallucination avoidance rather than UI or scale.
 
-What This Project Does
+## What This Project Does
 
-Loads company policy documents (PDFs)
+- Loads company policy documents (PDFs)
+- Splits them into meaningful text chunks
+- Generates embeddings and stores them in a vector database
+- Retrieves relevant context for each query
+- Generates answers only from retrieved context
+- Avoids guessing when information is missing
 
-Splits them into meaningful text chunks
+## Tech Stack
 
-Generates embeddings and stores them in a vector database
+- Python
+- LangChain
+- Chroma (vector store)
+- Ollama (nomic-embed-text) for embeddings
+- Groq-hosted LLM (LLaMA-based)
 
-Retrieves relevant context for each query
+## How It Works
 
-Generates answers only from retrieved context
+1. Policy PDFs are loaded from the `docs/` directory
+2. Text is split into overlapping chunks
+3. Each chunk is embedded and stored in Chroma
+4. For each query:
+   - Top-k relevant chunks are retrieved
+   - Retrieved context is passed to the LLM via a prompt
+5. The model generates an answer using only that context
 
-Avoids guessing when information is missing
+## Chunking Strategy
 
-Two prompt versions are used to compare output quality and safety.
-
-Tech Stack
-
-Python
-
-LangChain
-
-Chroma (vector store)
-
-Ollama (nomic-embed-text) for embeddings
-
-Groq-hosted LLM (LLaMA-based)
-
-How It Works
-
-Policy PDFs are loaded from the docs/ directory
-
-Text is split into overlapping chunks
-
-Each chunk is embedded and stored in Chroma
-
-For each query:
-
-Top-k relevant chunks are retrieved
-
-Retrieved context is passed to the LLM via a prompt
-
-The model generates an answer using only that context
-
-Chunking Strategy
-chunk_size = 600
-chunk_overlap = 100
-
+chunk_size = 600  
+chunk_overlap = 100  
 
 This was chosen because:
 
-Policy clauses often span multiple sentences
+- Policy clauses often span multiple sentences
+- Larger chunks preserve meaning better than very small splits
+- Overlap prevents losing information at chunk boundaries
+- The goal is factual accuracy, not summarization
 
-Larger chunks preserve meaning better than very small splits
+## Prompt Design
 
-Overlap prevents losing information at chunk boundaries
+### Prompt Version 1 (Baseline)
 
-The goal is factual accuracy, not summarization
-
-Prompt Design
-Prompt Version 1 (Baseline)
-Answer based on context: {context}
+Answer based on context: {context}  
 Question: {input}
-
 
 This prompt allows fluent answers but does not strongly restrict the model from adding assumptions.
 
-Prompt Version 2 (Improved)
-You are a professional Policy Assistant.
-Use ONLY the provided context to answer.
-If the answer is not in the context, say "I do not have sufficient information."
-Format your answer using bullet points.
+### Prompt Version 2 (Improved)
 
+You are a professional Policy Assistant.  
+Use ONLY the provided context to answer.  
+If the answer is not in the context, say "I do not have sufficient information."  
+Format your answer using bullet points.
 
 Changes made:
 
-Enforced strict grounding to retrieved context
+- Enforced strict grounding to retrieved context
+- Added a clear fallback for missing information
+- Improved readability using structured output
+- Significantly reduced hallucinations
 
-Added a clear fallback for missing information
-
-Improved readability using structured output
-
-Significantly reduced hallucinations
-
-Evaluation
+## Evaluation
 
 Five test questions were used, including:
 
-Fully answerable questions
-
-Questions requiring reasoning across policy sections
-
-Legal and delivery-related edge cases
-
-Questions that could cause hallucination if not handled carefully
+- Fully answerable questions
+- Questions requiring reasoning across policy sections
+- Legal and delivery-related edge cases
+- Questions that could cause hallucination if not handled carefully
 
 Result:
 
-Prompt Version 2 produced clearer, safer, and more policy-faithful answers than Prompt Version 1
+- Prompt Version 2 produced clearer, safer, and more policy-faithful answers
 
-Edge Case Handling
+## Edge Case Handling
 
-If no relevant information is retrieved, the system responds with:
-I do not have sufficient information.
+- If no relevant information is retrieved, the system responds with:
+  I do not have sufficient information.
+- Out-of-scope questions are not answered speculatively
+- All answers remain tied directly to document content
 
-Out-of-scope questions are not answered speculatively
+## Trade-offs
 
-All answers remain tied directly to document content
+- No UI, to keep focus on reasoning and prompt quality
+- No reranking step, for simplicity and transparency
+- Local embeddings chosen to avoid API dependency and cost
 
-Trade-offs
+## What I’d Improve With More Time
 
-No UI, to keep focus on reasoning and prompt quality
+- Add a reranking layer for better retrieval precision
+- Persist the vector database between runs
+- Add automated evaluation metrics
+- Enforce structured output using a schema
 
-No reranking step, for simplicity and transparency
+## Repository Structure
 
-Local embeddings chosen to avoid API dependency and cost
+docs/  
+├── Refund_policy.pdf  
+├── logistics_policy.pdf  
+└── terms_service.pdf  
 
-What I’d Improve With More Time
+lang.py  
+requirements.txt  
+README.md  
 
-Add a reranking layer for better retrieval precision
+## Notes
 
-Persist the vector database between runs
-
-Add automated evaluation metrics
-
-Enforce structured output using a schema
-
-Repository Structure
-docs/
-├── Refund_policy.pdf
-├── logistics_policy.pdf
-└── terms_service.pdf
-
-lang.py
-requirements.txt
-README.md
-
-Notes
-
-All results shown were generated by running the script locally.
+All results shown were generated by running the script locally.  
 This README reflects the actual behavior of the system.
