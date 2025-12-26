@@ -1,4 +1,4 @@
-##Prompt Engineering & RAG Mini Project
+Prompt Engineering & RAG Mini Project
 
 AI Engineer Intern – Take-Home Assignment
 
@@ -8,7 +8,7 @@ This project implements a small Retrieval-Augmented Generation (RAG) system for 
 
 The focus of this assignment is not UI or scale, but reasoning: how documents are retrieved, how prompts are designed, and how the system avoids hallucinations when information is missing.
 
-The project also compares two prompt versions to show how prompt iteration improves answer quality and reliability.
+The project also compares two prompt versions to demonstrate how prompt iteration improves answer quality and reliability.
 
 Objective
 
@@ -49,20 +49,20 @@ Ollama installed and running
 
 Groq API key
 
-Install dependencies
+Install Dependencies
 pip install -r requirements.txt
 
 Start Ollama
 ollama serve
 ollama pull nomic-embed-text
 
-Environment variables
+Environment Variables
 
 Create a .env file:
 
 GROQ_API_KEY=your_api_key_here
 
-Run the script
+Run the Script
 python lang.py
 
 Data Preparation
@@ -170,7 +170,7 @@ Safer handling of missing or partial information
 Edge Case Handling
 
 When no relevant information is found, the system responds with
-“I do not have sufficient information.”
+"I do not have sufficient information."
 
 Out-of-scope questions are not answered speculatively
 
