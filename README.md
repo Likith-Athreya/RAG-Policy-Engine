@@ -1,4 +1,4 @@
-Prompt Engineering & RAG Mini Project
+##Prompt Engineering & RAG Mini Project
 
 AI Engineer Intern – Take-Home Assignment
 
